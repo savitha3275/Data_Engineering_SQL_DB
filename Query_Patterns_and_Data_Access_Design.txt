@@ -1,0 +1,234 @@
+1. Read vs Write Patterns
+
+1. Logging Systems
+
+Primary operation:
+Writes (continuous event ingestion)
+Read-heavy or write-heavy?
+Write-heavy
+
+Why:
+Logs are constantly generated
+Reads are occasional (debugging, audits)
+
+Storage design implications:
+High write throughput
+Append-only design
+Eventual consistency acceptable
+Partitioning by time
+
+Best-fit systems:
+Wide-column stores (Cassandra)
+Log systems (Kafka)
+Time-series databases
+
+2. Reporting Dashboards
+
+Primary operation:
+Reads (aggregations, summaries)
+Read-heavy or write-heavy?
+Read-heavy
+
+Why:
+Dashboards query the same data repeatedly
+Data changes less frequently than it’s read
+Storage design implications:
+
+Optimized for fast reads
+Pre-aggregations or materialized views
+Index-heavy
+Columnar storage preferred
+
+Best-fit systems:
+Data warehouses
+Columnar databases (BigQuery, Redshift)
+
+3. Transactional APIs
+
+Primary operation:
+Balanced reads and writes
+Read-heavy or write-heavy?
+Read + Write intensive
+
+Why:
+Each request often reads and writes data
+Strong consistency required
+
+Storage design implications:
+ACID transactions
+Low latency
+Proper indexing
+Normalized schemas
+
+Best-fit systems:
+RDBMS (PostgreSQL, MySQL)
+
+2. Aggregation vs Embedding
+When Aggregation Queries Dominate
+
+What are aggregation queries?
+Queries that summarize data
+Examples: SUM, COUNT, AVG, GROUP BY
+
+When they dominate:
+Reporting systems
+Analytics workloads
+Dashboards and KPIs
+
+Storage systems that support aggregation well:
+RDBMS
+Columnar databases
+Data warehouses
+
+Example:
+Total sales per region per month
+
+When Document Embedding Is Preferable
+
+What is document embedding?
+Storing related data inside a single document
+
+When it’s preferable:
+Data is frequently accessed together
+
+Relationships are bounded
+Read-heavy workloads
+
+Storage systems that support embedding:
+Document stores (MongoDB)
+
+Example:
+User profile with embedded address and preferences
+Performance & Maintenance Impact
+
+Aggregation impact:
+Expensive on large datasets
+Requires indexing or pre-aggregation
+Slower without columnar storage
+
+Embedding impact:
+Faster reads
+Larger documents
+Updates can be more expensive
+
+Maintenance trade-offs:
+
+| Aggregation         | Embedding               |
+| ------------------- | ----------------------- |
+| Flexible analytics  | Faster reads            |
+| Higher compute cost | Data duplication        |
+| Easier updates      | Harder schema evolution |
+
+
+When to choose:
+Aggregation → analytics & reporting
+Embedding → read-heavy applications
+
+3. Pattern-to-Storage Mapping
+RDBMS
+
+Query patterns that work well:
+Transactional queries
+Joins across normalized tables
+Aggregations on structured data
+
+Why:
+Strong consistency
+Rich SQL support
+ACID transactions
+
+Examples:
+Order processing
+Financial reporting
+Document Stores
+
+Query patterns that work well:
+Fetch full objects
+Read-heavy access
+Limited joins
+
+Why:
+Embedded data avoids joins
+Flexible schema
+
+Examples:
+User profiles
+Product catalogs
+
+Columnar Systems
+
+Query patterns that work well:
+Large-scale aggregations
+Scans over few columns
+
+Analytical queries
+
+Why:
+Column-based storage
+Compression
+Fast aggregations
+
+Examples:
+BI dashboards
+Trend analysis
+
+4. Design Reflection
+Schema Design
+
+Read patterns influence:
+Denormalization
+Embedding
+Precomputed fields
+
+Write patterns influence:
+Normalization
+Append-only models
+Batch writes
+
+Aggregation needs influence:
+Star schemas
+Fact & dimension tables
+
+Example:
+Analytics → denormalized fact tables
+OLTP → normalized schemas
+
+Storage Choice
+
+Key factors:
+Read vs write ratio
+Consistency requirements
+Query complexity
+
+Data volume
+
+Examples:
+Write-heavy logs → NoSQL
+Read-heavy analytics → columnar DB
+
+Transactions → RDBMS
+Indexing Strategy
+
+Read-heavy workloads:
+Multiple indexes
+Composite indexes
+Covering indexes
+
+Write-heavy workloads:
+Minimal indexes
+Time-based partitions
+
+Trade-off:
+More indexes → faster reads, slower writes
+
+Example:
+Logging system → index only timestamps
+Reporting → index group-by columns
+
+5. One-Line Summaries
+
+Read-heavy systems: Optimize reads and indexing
+Write-heavy systems: Optimize ingestion and throughput
+Aggregation: Great for analytics, expensive at scale
+Embedding: Fast reads, harder updates
+Query patterns drive schema, storage, and indexing
